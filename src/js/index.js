@@ -191,28 +191,105 @@ import ReactDom from 'react-dom';
 
 
 
-var Search = React.createClass({
-    getInitialState:function(){
-        return {
-            value:'please input'
-        }
-    },
-    onHandleChange:function () {
-        this.setState({value: this.refs.inp.value});
-    },
+// var Search = React.createClass({
+//     getInitialState:function(){
+//         return {
+//             value:'please input'
+//         }
+//     },
+//     onHandleChange:function () {
+//         this.setState({value: this.refs.inp.value});
+//     },
+//     render:function(){
+//         console.log(this.state.value);
+//         return(
+//             <div>
+//                 <input type='text' ref='inp' value={this.state.value} onChange={this.onHandleChange()}> </input>
+//                 <span>{this.state.value}</span>
+//              </div>
+//         )
+//     }
+// })
+
+// ReactDom.render(
+//     <Search/>,
+//      document.getElementById('root')
+    
+// )
+
+
+
+
+var Mask = React.createClass({
     render:function(){
-        console.log(this.state.value);
+        var styles={
+            position:'absolute',
+            left:0,
+            right:0,
+            top:0,
+            bottom:0,
+            background:'black',
+            opacity:0.5,
+            display:'block'
+        }
+       if( this.props.show){
+           styles.display = 'block';
+       }else{
+           styles.display='none';
+       }
         return(
-            <div>
-                <input type='text' ref='inp' value={this.state.value} onChange={this.onHandleChange()}> </input>
-                <span>{this.state.value}</span>
-             </div>
+            <div style={styles}>
+               
+                {this.props.children}
+            
+            </div>
         )
     }
 })
 
+var Dialog = React.createClass({
+
+    render:function(){
+        var styles = {
+            width:'100%',
+            height:200,
+            lineHeight:'200px',
+            textAlign:'center',
+            color:'black',
+            background:'orange',
+        }
+        this.props.show
+        return(
+            <div>
+                <Mask show={this.props.show}>
+                    <div style={styles} onClick={this.props.onShowClick}></div>
+                </Mask>
+            
+            </div>
+        )
+    }
+})
+
+// 改变同级组件需要借助父级，需要一个钩子函数将改变的子级调用出来
+var App = React.createClass({
+    //在最顶层组件给Dialog传了一个show，这个show刚好是App组件的状态值，此时将show传到Dialog中，Dialog将这个值挂载到props上，这个show要控制Dialog，所以也要往mask中传
+    getInitialState:function(){
+        return{
+            show:true
+        }
+    },
+    onHandleClick:function(){
+        this.setState({show:false})
+    },
+    render:function(){
+        return(
+            <div>
+                <Dialog show={this.state.show} onShowClick={this.onHandleClick}/>
+            </div>
+        )
+    }
+})
 ReactDom.render(
-    <Search/>,
-     document.getElementById('root')
-    
+    <App/>,
+    document.getElementById('root')
 )
